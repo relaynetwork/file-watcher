@@ -84,6 +84,4 @@ class Watcher < BaseApp
   end
 end
 
-if $0 == __FILE__
-  Watcher.main
-end
+Watcher.main

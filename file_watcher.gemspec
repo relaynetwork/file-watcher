@@ -1,4 +1,4 @@
-PKG_VERSION = '1.0.1'
+PKG_VERSION = '1.0.2'
 $spec = Gem::Specification.new do |s|
   s.name = 'file-watcher'
   s.version = PKG_VERSION
@@ -10,6 +10,7 @@ EOS
   s.files = %w[bin/watcher lib/file_watcher/watch_config.rb lib/file_watcher/watch_job.rb]
   s.executables = %w[watcher]
   s.require_paths = %w[bin lib]
+  s.homepage = "https://github.com/relaynetwork/file-watcher"
   s.extra_rdoc_files = %w[README.textile]
   s.has_rdoc = false
   s.authors = ["Paul Santa Clara", "Josh Crean", "Kyle Burton"]
