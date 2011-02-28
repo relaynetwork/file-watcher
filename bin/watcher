@@ -64,6 +64,7 @@ class Watcher < BaseApp
 
     WatchJob.registered_jobs.each do |job|
       @notifier.watch(job.watch_criteria[:target_dir], *job.watch_criteria[:events]) do |event|
+        puts "got event: #{event}"
         job.event_handler event
       end
     end
