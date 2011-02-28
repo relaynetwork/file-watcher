@@ -1,0 +1,50 @@
+h1. Overview
+
+file-watcher wraps some configuration around Ruby's INotify library to allow configurable actions to be taken upon notification.
+
+h1. Usage
+
+<pre>
+  user@host ~$ watcher -?? -??
+</pre>
+
+h2. Watcher Configuration
+
+<pre>
+class ExampleWatch  < WatchJob
+  
+  new_watch_job do |watch_job|
+    watch_job.watch_criteria = {
+      :events => [:create],
+      :file_glob => /.trigger$/,
+      :target_dir  => "/tmp"
+    }
+
+    watch_job.watch_action =
+      {:http =>
+        {:method       => :post,
+          :hostname    => "example.server.com",
+          :port        => "443",
+          :auth_user   => "username",
+          :auth_pass   => "password",
+          :uri         => "/some/http/interface",
+          :ssl         => true,
+          :body        => {:some => "form", :paramters => "expected", :by => "the target to be triggered"}
+    }}
+  end
+end
+</pre>
+
+h2. Supported Watch Actions
+
+Currently only a post over http is supported.
+
+h1. Authors
+
+Josh m'fin Crean
+
+Paul The Heart Santa Clara
+
+Kylebot is watching you
+
+h1. License

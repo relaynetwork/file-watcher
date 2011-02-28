@@ -1,0 +1,89 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'base_app'
+require 'rb-inotify'
+require 'json'
+require 'file_watcher/watch_job'
+
+
+#
+# to watch the current directory, run:
+#
+#     ruby watcher.rb -d . -c trigger
+#
+# This also specifies a 'command' directory - a place where if you
+# touch a 'stop' file, the inotify loop will terminate.
+#
+
+
+class Watcher < BaseApp
+
+  def command_line_arguments
+    super.concat [["w","watch-job-dir=","Directory of watch jobs.", true],
+                  ["c","control-dir=","Control directory to watch for a 'stop' file..", true]]
+  end
+
+  def make_flags_map flags
+    flags.inject({}) do |m,f|
+      m[f] = true
+      m
+    end
+  end
+
+  def stop_file_path
+    "#{@control_dir}/stop"
+  end
+
+  def handle_event event, flags
+    if event.name == 'stop'
+      if File.exist?(stop_file_path)
+        @notifier.stop
+        File.delete stop_file_path
+        return
+      end
+    end
+
+    # we don't care about things like 'ls' or other changes on the directory itself
+    return if flags[:isdir]
+
+    puts "handle event: #{event.name} was #{flags.inspect}"
+  end
+
+
+
+  def run
+    @control_dir = self.control_dir || '.'
+  
+    
+    Dir["#{@watch_job_dir}/*.rb"].each do |f|
+      require File.join( File.dirname(__FILE__), f)
+    end
+
+    @notifier = INotify::Notifier.new
+    # these are all the events we can watch for: :access, :attrib,
+    # :close_write, :close_nowrite, :create, :delete, :delete_self,
+    # :modify, :move_self, :moved_from, :moved_to, :open
+
+    # :access is too noisy for watching a directory (lots and lots of events)
+    # notifier.watch(@dir, :attrib, :close_write, :close_nowrite, :create, :delete, :delete_self, :modify, :move_self, :moved_from, :moved_to, :open) do |event|
+
+    WatchJob.registered_jobs.each do |job|
+      @notifier.watch(job.watch_criteria[:target_dir], *job.watch_criteria[:events]) do |event|
+        job.event_handler event
+      end
+    end
+
+    @notifier.watch(@control_dir, :close_write, :close_nowrite, :create, :delete, :modify, :moved_from, :moved_to, :delete_self, :move_self, :recursive) do |event|
+      puts "CONTROL DIR HIT: #{@control_dir}"
+      handle_event event, make_flags_map(event.flags)
+    end
+
+    puts "Entering run loop."
+    @notifier.run
+    puts "Exited run loop."
+  end
+end
+
+if $0 == __FILE__
+  Watcher.main
+end
