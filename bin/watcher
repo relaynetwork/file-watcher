@@ -42,21 +42,16 @@ class Watcher < BaseApp
         return
       end
     end
-
-    # we don't care about things like 'ls' or other changes on the directory itself
-    return if flags[:isdir]
-
-    puts "handle event: #{event.name} was #{flags.inspect}"
   end
 
 
 
   def run
     @control_dir = self.control_dir || '.'
-  
-    
+
+
     Dir["#{@watch_job_dir}/*.rb"].each do |f|
-      require File.join( File.dirname(__FILE__), f)
+      require f
     end
 
     @notifier = INotify::Notifier.new
@@ -74,7 +69,6 @@ class Watcher < BaseApp
     end
 
     @notifier.watch(@control_dir, :close_write, :close_nowrite, :create, :delete, :modify, :moved_from, :moved_to, :delete_self, :move_self, :recursive) do |event|
-      puts "CONTROL DIR HIT: #{@control_dir}"
       handle_event event, make_flags_map(event.flags)
     end
 
