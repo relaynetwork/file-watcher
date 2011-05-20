@@ -4,6 +4,7 @@ require 'base_app'
 require 'rb-inotify'
 require 'json'
 require 'file_watcher/watch_job'
+require 'file_watcher/log_helper'
 
 
 #
@@ -17,6 +18,7 @@ require 'file_watcher/watch_job'
 
 
 class Watcher < BaseApp
+  include LogHelper
 
   def command_line_arguments
     super.concat [["w","watch-job-dir=","Directory of watch jobs.", true],
@@ -64,7 +66,7 @@ class Watcher < BaseApp
 
     WatchJob.registered_jobs.each do |job|
       @notifier.watch(job.watch_criteria[:target_dir], *job.watch_criteria[:events]) do |event|
-        puts "got event: #{event}"
+        log "got event: #{event}"
         job.event_handler event
       end
     end
@@ -73,9 +75,9 @@ class Watcher < BaseApp
       handle_event event, make_flags_map(event.flags)
     end
 
-    puts "Entering run loop."
+    log "Entering run loop."
     @notifier.run
-    puts "Exited run loop."
+    log "Exited run loop."
   end
 end
 

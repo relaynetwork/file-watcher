@@ -1,4 +1,4 @@
-PKG_VERSION = '1.0.6'
+PKG_VERSION = '1.0.7'
 $spec = Gem::Specification.new do |s|
   s.name = 'file-watcher'
   s.version = PKG_VERSION
@@ -7,7 +7,7 @@ $spec = Gem::Specification.new do |s|
 Use inotify to watch for file system modifcations and take a configured action.'
 EOS
 
-  s.files = %w[bin/watcher lib/file_watcher/watch_config.rb lib/file_watcher/watch_job.rb]
+  s.files = %w[bin/watcher lib/file_watcher/watch_config.rb lib/file_watcher/watch_job.rb lib/file_watcher/log_helper.rb]
   s.executables = %w[watcher]
   s.require_paths = %w[bin lib]
   s.homepage = "https://github.com/relaynetwork/file-watcher"
