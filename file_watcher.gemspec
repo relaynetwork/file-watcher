@@ -1,4 +1,4 @@
-PKG_VERSION = '1.0.7'
+PKG_VERSION = '1.0.8'
 $spec = Gem::Specification.new do |s|
   s.name = 'file-watcher'
   s.version = PKG_VERSION
