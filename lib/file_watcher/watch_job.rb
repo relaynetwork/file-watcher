@@ -32,9 +32,7 @@ class WatchJob
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     end
 
-    file_suffix = event.name.match(/(\d{2})\./)[1]
-
-    body = watch_action[:http][:body].merge({ :args => watch_action[:http][:args].call().push(event.name).push(file_suffix) } )
+    body = watch_action[:http][:body].merge({ :args => watch_action[:http][:args].call(event.name) } )
 
     log "URL: #{url}"
     log "body: #{body.to_json}"
