@@ -56,7 +56,8 @@ class WatchJob
       # OK
       log "Req was ok"
     else
-      res.error!
+      #res.error!
+      log "Error: unsucessful post to #{uri.path}, got response code: #{res.inspect}"
     end
 
     log "Response: #{res}"
