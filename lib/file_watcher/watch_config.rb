@@ -19,7 +19,7 @@ module WatchConfig
     end
 
     def new_watch_job &block
-      wj = WatchJob.new 
+      wj = self.new 
 
       yield wj
 
